@@ -1,10 +1,13 @@
+#pragma region TODO
 #include <algorithm>
 #include <array>
 #include <ctime>
 #include <iostream>
 #include <map>
 #include <random>
-#include <string>
+
+#include "game.h"
+#include "player.h"
 
 void test_verif_suite()
 {
@@ -16,17 +19,17 @@ void test_verif_suite()
 
 	int value = 0;
 
-	std::array<int, 7> test{1, 3, 5, 10, 11, 12, 13};
+	std::array<int, 7> test{ 1, 2, 3, 4, 5, 12, 13 };
 
 	srand(time(NULL));
 
 	std::shuffle(test.begin(), test.end(), std::default_random_engine(rand()));
 
-	std::map<int, int> test2;
+	std::multimap<int, int> test2;
 
 	for (int idx = 0; idx < test.size(); idx++)
 	{
-		test2.emplace(test.at(idx),idx);
+		test2.emplace(test.at(idx), idx);
 	}
 
 	for (auto t : test2)
@@ -43,7 +46,7 @@ void test_verif_suite()
 			verificateur++;
 			suite_count++;
 		}
-		else
+		else if (suite_count < 5)
 		{
 			verificateur = t.first;
 			verificateur++;
@@ -54,7 +57,7 @@ void test_verif_suite()
 		std::cout << t.first << " : " << "idx = " << t.second << std::endl;
 	}
 
-	if (verificateur >= 13)
+	if (verificateur >= 13 && suite_count >= 4)
 	{
 		for (auto t : test2)
 		{
@@ -74,8 +77,13 @@ void test_verif_suite()
 		std::cout << "No Suite" << std::endl;
 	}
 }
+#pragma endregion
+
+#include "deck.h"
 
 int main()
 {
-    test_verif_suite();
+	Game game;
+
+	game.GameLoop();
 }
