@@ -63,11 +63,25 @@ void Game::GameLoop()
 		{
 			if (player1_.rankings_.HighestCard() > player2_.rankings_.HighestCard())
 			{
-				std::cout << "Player 1 wins!" << std::endl;
+				if (player2_.rankings_.HighestCard().ValueToInt() == 1)
+				{
+					std::cout << "Player 2 wins!" << std::endl;
+				}
+				else
+				{
+					std::cout << "Player 1 wins!" << std::endl;
+				}
 			}
 			else if (player1_.rankings_.HighestCard() < player2_.rankings_.HighestCard())
 			{
-				std::cout << "Player 2 wins!" << std::endl;
+				if (player1_.rankings_.HighestCard().ValueToInt() == 1)
+				{
+					std::cout << "Player 1 wins!" << std::endl;
+				}
+				else
+				{
+					std::cout << "Player 2 wins!" << std::endl;
+				}
 			}
 			else if (player1_.rankings_.HighestCard() == player2_.rankings_.HighestCard())
 			{

@@ -295,6 +295,7 @@ void Rankings::Straight(std::vector<Card> all_hand, std::vector<Card> hand)
 
 void Rankings::CheckRank(std::vector<Card> hand, std::vector<Card> board)
 {
+	HighCard(hand);
 	StraightFlush(hand, board);
 	if (rank_ != EnumRank::kStraightFlush && rank_ != EnumRank::kRoyalFlush)
 	{
@@ -303,10 +304,6 @@ void Rankings::CheckRank(std::vector<Card> hand, std::vector<Card> board)
 	if (rank_ == EnumRank::kHighCard)
 	{
 		SameValue(hand, board);
-	}
-	if (rank_ == EnumRank::kHighCard)
-	{
-		HighCard(hand);
 	}
 }
 
