@@ -13,8 +13,7 @@ Game::Game()
 
 void Game::GameLoop()
 {
-	Rankings::EnumRank rank;
-	int round = 1;
+	bool game_end = false;
 
 	do
 	{
@@ -50,7 +49,31 @@ void Game::GameLoop()
 		std::cout << "Player 2's rank: " << std::endl;
 		player2_.rankings_.RankToString();
 
-		rank = player1_.rankings_.Rank();
+		std::cout << std::endl;
+
+		if (player1_.rankings_.RankToInt() > player2_.rankings_.RankToInt())
+		{
+			std::cout << "Player 1 wins!" << std::endl;
+		}
+		else if (player1_.rankings_.RankToInt() < player2_.rankings_.RankToInt())
+		{
+			std::cout << "Player 2 wins!" << std::endl;
+		}
+		else if (player1_.rankings_.RankToInt() == player2_.rankings_.RankToInt())
+		{
+			if (player1_.rankings_.HighestCard() > player2_.rankings_.HighestCard())
+			{
+				std::cout << "Player 1 wins!" << std::endl;
+			}
+			else if (player1_.rankings_.HighestCard() < player2_.rankings_.HighestCard())
+			{
+				std::cout << "Player 2 wins!" << std::endl;
+			}
+			else if (player1_.rankings_.HighestCard() == player2_.rankings_.HighestCard())
+			{
+				std::cout << "It's a tie!" << std::endl;
+			}
+		}
 
 		deck_.ClearDeck();
 		player1_.ClearHand();
@@ -61,10 +84,9 @@ void Game::GameLoop()
 
 		std::cout << std::endl;
 
-		round++;
+		game_end = true;
 	}
-	while (!(rank == Rankings::EnumRank::kRoyalFlush));
-	std::cout << std::endl << "Nombre de Round : " << round << std::endl;
+	while (!game_end);
 }
 
 void Game::CardDeal()

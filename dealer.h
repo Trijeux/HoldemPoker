@@ -9,7 +9,7 @@ class Dealer
 public:
 	Dealer() = default;
 
-	void AddCardInBoard(const Card card);
+	void AddCardInBoard(Card card);
 
 	void ShowBoard() const;
 

@@ -32,6 +32,8 @@ public:
 	void CheckRank(std::vector<Card>,std::vector<Card>);
 	EnumRank Rank() const { return rank_; }
 
+	Card HighestCard() const { return highest_card_; }
+
 private:
 
 	void RoyalFlush(std::vector<Card> vector_straight_flush); // Quinte Flush Royale

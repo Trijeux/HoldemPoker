@@ -17,7 +17,12 @@ public:
 	std::vector<Card> Hand() const { return hand_; }
 
 	Rankings rankings_;
+
+	int Bank() const { return bank_; }
 private:
+
+	int bank_ = 1000;
+
 	std::vector<Card> hand_;
 };
 
