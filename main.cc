@@ -81,7 +81,7 @@ void test_verif_suite()
 
 #include "deck.h"
 
-int main()
+void main()
 {
 	Game game;
 

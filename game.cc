@@ -14,6 +14,7 @@ Game::Game()
 void Game::GameLoop()
 {
 	Rankings::EnumRank rank;
+	int round = 1;
 
 	do
 	{
@@ -21,22 +22,28 @@ void Game::GameLoop()
 		deck_.ShuffleDeck();
 		
 		CardDeal();
+
+
 		DrawGame();
 		/*system("pause");
 	system("cls");*/
 		Flop();
+
 		DrawGame();
 		/*system("pause");
 	system("cls");*/
 		Turn();
+
 		DrawGame();
 		/*system("pause");
 	system("cls");*/
 		River();
+
+
 		DrawGame();
 		std::cout << std::endl << std::endl << std::endl;
-		player1_.rankings_.StraightFlush(player1_.Hand(), dealer_.Board());
-		player2_.rankings_.StraightFlush(player2_.Hand(), dealer_.Board());
+		player1_.rankings_.SameValue(player1_.Hand(), dealer_.Board());
+		player2_.rankings_.SameValue(player2_.Hand(), dealer_.Board());
 
 		std::cout << "Player 1's rank: " << std::endl;
 		player1_.rankings_.CheckRank();
@@ -53,8 +60,11 @@ void Game::GameLoop()
 		dealer_.ClearBoard();
 
 		std::cout << std::endl;
+
+		round++;
 	}
-	while (!(rank == Rankings::EnumRank::kStraight));
+	while (!(rank == Rankings::EnumRank::kThreeOfAKind));
+	std::cout << std::endl << "Nombre de Round : " << round << std::endl;
 }
 
 void Game::CardDeal()

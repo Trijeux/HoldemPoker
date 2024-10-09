@@ -2,12 +2,16 @@
 
 #include <iostream>
 
-Card::Card(const int value,const int suit)
+Card::Card(const int value, const int suit)
 {
 	value_ = static_cast<EnumValue>(value);
 	suit_ = static_cast<EnumSuit>(suit);
 }
 
+bool Card::CompareCards(const Card& a, const Card& b)
+{
+	return static_cast<int>(a.value_) < static_cast<int>(b.value_);
+}
 std::string Card::SuitToString() const
 {
 	switch (suit_)

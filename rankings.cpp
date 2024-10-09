@@ -1,7 +1,42 @@
 #include "rankings.h"
 
+#include <algorithm>
 #include <iostream>
 #include <map>
+
+void Rankings::RoyalFlush(std::vector<Card> vector_straight_flush)
+{
+	int royal_flush = 0;
+	for (auto card : vector_straight_flush)
+	{
+		switch (card.Value())  // NOLINT(clang-diagnostic-switch-enum)
+		{
+		case Card::EnumValue::kAce:  // NOLINT(bugprone-branch-clone)
+			royal_flush++;
+			break;
+		case Card::EnumValue::kKing:
+			royal_flush++;
+			break;
+		case Card::EnumValue::kQueen:
+			royal_flush++;
+			break;
+		case Card::EnumValue::kJack:
+			royal_flush++;
+			break;
+		case Card::EnumValue::kTen:
+			royal_flush++;
+			break;
+		default:
+			royal_flush = 0;
+			break;
+		}
+	}
+	if (royal_flush >= 5)
+	{
+		royal_flush_ = true;
+		rank_ = EnumRank::kRoyalFlush;
+	}
+}
 
 void Rankings::StraightFlush(std::vector<Card> hand_player, std::vector<Card> board)
 {
@@ -12,34 +47,31 @@ void Rankings::StraightFlush(std::vector<Card> hand_player, std::vector<Card> bo
 		all_hand.emplace_back(b);
 	}
 
-	std::map<int, Card::EnumSuit> map_for_straight_flush = Flush(all_hand);
+	std::vector<Card> vector_for_straight_flush = Flush(all_hand, hand_player);
 
 	if (flush_)
 	{
-		Straight(map_for_straight_flush);
+		Straight(vector_for_straight_flush, hand_player);
 	}
 	else
 	{
-		for (auto a : all_hand)
-		{
-			map_for_straight_flush.emplace(a.ValueToInt(), a.Suit());
-		}
-		Straight(map_for_straight_flush);
+		Straight(all_hand, hand_player);
 	}
 
 	if (flush_ && straight_)
 	{
 		straight_flush_ = true;
 		rank_ = EnumRank::kStraightFlush;
+		RoyalFlush(vector_for_straight_flush);
 	}
 }
 
-std::map<int, Card::EnumSuit> Rankings::Flush(std::vector<Card> all_hand)
+std::vector<Card> Rankings::Flush(std::vector<Card> all_hand, std::vector<Card> hand)
 {
-	std::map<int, Card::EnumSuit> square;
-	std::map<int, Card::EnumSuit> heart;
-	std::map<int, Card::EnumSuit> club;
-	std::map<int, Card::EnumSuit> diamond;
+	std::vector<Card> vec_square;
+	std::vector<Card> vec_heart;
+	std::vector<Card> vec_club;
+	std::vector<Card> vec_diamond;
 
 	auto suit_to_return = Card::EnumSuit::kNoSuit;
 
@@ -50,38 +82,113 @@ std::map<int, Card::EnumSuit> Rankings::Flush(std::vector<Card> all_hand)
 		switch (a.Suit())
 		{
 		case Card::EnumSuit::kSquare:
-			square.emplace(a.ValueToInt(), a.Suit());
-			if (!is_flush && square.size() >= 5)
+			vec_square.emplace_back(a);
+			if (!is_flush && vec_square.size() >= 5)
 			{
 				suit_to_return = Card::EnumSuit::kSquare;
 				is_flush = true;
 			}
 			break;
 		case Card::EnumSuit::kHeart:
-			heart.emplace(a.ValueToInt(), a.Suit());
-			if (!is_flush && heart.size() >= 5)
+			vec_heart.emplace_back(a);
+			if (!is_flush && vec_heart.size() >= 5)
 			{
 				suit_to_return = Card::EnumSuit::kHeart;
 				is_flush = true;
 			}
 			break;
 		case Card::EnumSuit::kClub:
-			club.emplace(a.ValueToInt(), a.Suit());
-			if (!is_flush && club.size() >= 5)
+			vec_club.emplace_back(a);
+			if (!is_flush && vec_club.size() >= 5)
 			{
 				suit_to_return = Card::EnumSuit::kClub;
 				is_flush = true;
 			}
 			break;
 		case Card::EnumSuit::kDiamond:
-			diamond.emplace(a.ValueToInt(), a.Suit());
-			if (!is_flush && diamond.size() >= 5)
+			vec_diamond.emplace_back(a);
+			if (!is_flush && vec_diamond.size() >= 5)
 			{
 				suit_to_return = Card::EnumSuit::kDiamond;
 				is_flush = true;
 			}
 			break;
 		}
+	}
+
+	bool have_hand = false;
+	switch (suit_to_return)
+	{
+	case Card::EnumSuit::kSquare:
+		for (auto h : hand)
+		{
+			for (auto v : vec_square)
+			{
+				if (h == v && !have_hand)
+				{
+					is_flush = true;
+					have_hand = true;
+				}
+				else if (!have_hand)
+				{
+
+					is_flush = false;
+				}
+			}
+		}
+		break;
+	case Card::EnumSuit::kHeart:
+		for (auto h : hand)
+		{
+			for (auto v : vec_heart)
+			{
+				if (h == v && !have_hand)
+				{
+					is_flush = true;
+					have_hand = true;
+				}
+				else if (!have_hand)
+				{
+					is_flush = false;
+				}
+			}
+		}
+		break;
+	case Card::EnumSuit::kClub:
+		for (auto h : hand)
+		{
+			for (auto v : vec_club)
+			{
+				if (h == v && !have_hand)
+				{
+					is_flush = true;
+					have_hand = true;
+				}
+				else if (!have_hand)
+				{
+					is_flush = false;
+				}
+			}
+		}
+		break;
+	case Card::EnumSuit::kDiamond:
+		for (auto h : hand)
+		{
+			for (auto v : vec_diamond)
+			{
+				if (h == v && !have_hand)
+				{
+					is_flush = true;
+					have_hand = true;
+				}
+				else if (!have_hand)
+				{
+					is_flush = false;
+				}
+			}
+		}
+		break;
+	case Card::EnumSuit::kNoSuit: break;
 	}
 
 	if (is_flush)
@@ -92,42 +199,81 @@ std::map<int, Card::EnumSuit> Rankings::Flush(std::vector<Card> all_hand)
 
 	switch (suit_to_return)
 	{
-	case Card::EnumSuit::kSquare: return square;
-	case Card::EnumSuit::kHeart: return heart;
-	case Card::EnumSuit::kClub: return club;
-	case Card::EnumSuit::kDiamond: return diamond;
+	case Card::EnumSuit::kSquare: return vec_square;
+	case Card::EnumSuit::kHeart: return vec_heart;
+	case Card::EnumSuit::kClub: return vec_club;
+	case Card::EnumSuit::kDiamond: return vec_diamond;
 	case Card::EnumSuit::kNoSuit: break;
 	}
 	return {};
 }
 
-void Rankings::Straight(std::map<int, Card::EnumSuit> map_for_straight)
+void Rankings::Straight(std::vector<Card> all_hand, std::vector<Card> hand)
 {
 	straight_ = false;
 
-	if (map_for_straight.size() >= 5)
+	std::vector<Card> cards_straight;
+
+	std::sort(all_hand.begin(), all_hand.end(), Card::CompareCards);
+
+	if (all_hand.size() >= 5)
 	{
 		int old_value = 0;
 		int straight_count = 0;
+		bool is_straight = false;
 		bool have_ace = false;
 
-		for (auto m : map_for_straight)
+		for (auto a : all_hand)
 		{
-			if (m.first == 1)
+			if (a.ValueToInt() == 1)
 			{
 				have_ace = true;
 				continue;
 			}
 
-			if (m.first == old_value + 1)
+			if (a.ValueToInt() == old_value + 1)
 			{
 				straight_count++;
-				old_value = m.first;
+				old_value = a.ValueToInt();
+				cards_straight.emplace_back(a);
+				is_straight = true;
 			}
-			else
+			else if (a.ValueToInt() == old_value)
 			{
-				old_value = m.first;
+				cards_straight.emplace_back(a);
+			}
+			else if(!(straight_count == 5))
+			{
+				old_value = a.ValueToInt();
 				straight_count = 1;
+				cards_straight.clear();
+				cards_straight.emplace_back(a);
+				is_straight = false;
+			}
+		}
+
+		if (is_straight && cards_straight.size() >= 5)
+		{
+			bool flag_have_hand = false;
+			for (auto a : hand)
+			{
+				for (auto c : cards_straight)
+				{
+					if (a == c)
+					{
+						is_straight = true;
+						flag_have_hand = true;
+						break;
+					}
+					else
+					{
+						is_straight = false;
+					}
+				}
+				if (flag_have_hand)
+				{
+					break;
+				}
 			}
 		}
 
@@ -136,10 +282,132 @@ void Rankings::Straight(std::map<int, Card::EnumSuit> map_for_straight)
 			straight_count++;
 		}
 
-		if (straight_count >= 5)
+		if (straight_count >= 5 && is_straight)
 		{
 			straight_ = true;
 			rank_ = EnumRank::kStraight;
+		}
+	}
+}
+
+void Rankings::SameValue(std::vector<Card> hand, std::vector<Card> board)
+{
+	std::vector<Card> all_hand = board;
+	int old_value = 0;
+
+	for (auto a : hand)
+	{
+		all_hand.emplace_back(a);
+	}
+
+	std::sort(all_hand.begin(), all_hand.end(), Card::CompareCards);
+
+	int value_count = 0;
+	bool is_same_value = false;
+
+	std::vector<Card> same_value_hand;
+	std::vector<Card> same_value_hand_end;
+
+	for (auto a : all_hand)
+	{
+		if (a.ValueToInt() == old_value)
+		{
+			value_count++;
+			same_value_hand.emplace_back(a);
+		}
+		else
+		{
+			old_value = a.ValueToInt();
+			value_count = 1;
+			if (rank_ == EnumRank::kHighCard)
+			{
+				is_same_value = false;
+			}
+			same_value_hand.clear();
+			same_value_hand.emplace_back(a);
+
+		}
+
+		if (value_count == 2 && rank_ == EnumRank::kHighCard)
+		{
+			for (auto s : same_value_hand)
+			{
+				same_value_hand_end.emplace_back(s);
+			}
+			same_value_hand.clear();
+			is_same_value = true;
+			rank_ = EnumRank::kOnePair;
+		}
+		else if(value_count == 2 && rank_ == EnumRank::kOnePair)
+		{
+			for (auto s : same_value_hand)
+			{
+				same_value_hand_end.emplace_back(s);
+			}
+			same_value_hand.clear();
+			is_same_value = true;
+			rank_ = EnumRank::kTwoPair;
+		}
+		else if (value_count == 3 && rank_ == EnumRank::kOnePair)
+		{
+			for (auto s : same_value_hand)
+			{
+				same_value_hand_end.emplace_back(s);
+			}
+			same_value_hand.clear();
+			is_same_value = true;
+			rank_ = EnumRank::kThreeOfAKind;
+		}
+		else if (value_count == 3 && rank_ == EnumRank::kTwoPair)
+		{
+			for (auto s : same_value_hand)
+			{
+				same_value_hand_end.emplace_back(s);
+			}
+			same_value_hand.clear();
+			is_same_value = true;
+			rank_ = EnumRank::kFullHouse;
+		}
+		else if (value_count == 4 && rank_ == EnumRank::kThreeOfAKind)
+		{
+			for (auto s : same_value_hand)
+			{
+				same_value_hand_end.emplace_back(s);
+			}
+			same_value_hand.clear();
+			is_same_value = true;
+			rank_ = EnumRank::kFourOfAKind;
+		}
+
+	}
+
+	if (is_same_value && same_value_hand_end.size() >= 2)
+	{
+		bool flag_have_hand = false;
+		for (auto a : hand)
+		{
+			for (auto c : same_value_hand_end)
+			{
+				if (a == c)
+				{
+					is_same_value = true;
+					flag_have_hand = true;
+					break;
+				}
+				else
+				{
+					is_same_value = false;
+				}
+			}
+			if (flag_have_hand)
+			{
+				break;
+			}
+		}
+
+		if (!is_same_value)
+		{
+			rank_ = EnumRank::kHighCard;
 		}
 	}
 }

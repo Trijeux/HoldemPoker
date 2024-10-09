@@ -23,7 +23,7 @@ public:
 	void BurnCard();
 private:
 	std::vector<Card> cards_;
-	
+
 };
 
 #endif // DECK_H

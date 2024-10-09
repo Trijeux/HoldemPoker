@@ -22,21 +22,22 @@ public:
 		kRoyalFlush
 	};
 
-	void RoyalFlush(); // Quinte Flush Royale
+	void RoyalFlush(std::vector<Card> vector_straight_flush); // Quinte Flush Royale
 	void StraightFlush(std::vector<Card>, std::vector<Card>); // Quinte Flush
 	void FourOfAKind(); // Carre
 	void FullHouse(); // Full
 	void ThreeOfAKind(); // Brelan
 	void TwoPair(); // Double Paire
-	void OnePair(); // Paire
-	void HighCard(); // Carte Haute
+	void OnePair();// Paire
+	void SameValue(std::vector<Card>, std::vector<Card>); // Carte Identique
+	void HighCard();// Carte Haute
 	void CheckRank();
 	void NewGame();
 	EnumRank Rank() const { return rank_; }
 
 private:
-	std::map<int, Card::EnumSuit> Flush(std::vector<Card> all_hand); // Couleur
-	void Straight(std::map<int, Card::EnumSuit> map_for_straight); // Suite
+	std::vector<Card> Flush(std::vector<Card>, std::vector<Card>); // Couleur
+	void Straight(std::vector<Card>, std::vector<Card>); // Suite
 
 	bool royal_flush_ = false;
 	bool straight_flush_ = false;

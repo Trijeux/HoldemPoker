@@ -18,8 +18,8 @@ public:
 	std::vector<Card> Board() const { return board_; }
 
 private:
+	
 	std::vector<Card> board_;
-
 
 };
 

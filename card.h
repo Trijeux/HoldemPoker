@@ -32,6 +32,7 @@ public:
 	};
 
 	Card(int value, int suit);
+	static bool CompareCards(const Card& a, const Card& b);
 
 	std::string SuitToString() const;
 	std::string ValueToString() const;
@@ -40,6 +41,8 @@ public:
 
 	EnumValue Value() const { return value_; }
 	EnumSuit Suit() const { return suit_; }
+
+	bool operator==(const Card& other) const { return value_ == other.value_ && suit_ == other.suit_; }
 
 private:
 	EnumValue value_;
