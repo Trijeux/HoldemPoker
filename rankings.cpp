@@ -4,6 +4,11 @@
 #include <iostream>
 #include <map>
 
+Rankings::Rankings() : highest_card_(Card(0,0))
+{
+
+}
+
 void Rankings::RoyalFlush(std::vector<Card> vector_straight_flush)
 {
 	int royal_flush = 0;
@@ -33,7 +38,6 @@ void Rankings::RoyalFlush(std::vector<Card> vector_straight_flush)
 	}
 	if (royal_flush >= 5)
 	{
-		royal_flush_ = true;
 		rank_ = EnumRank::kRoyalFlush;
 	}
 }
@@ -60,7 +64,6 @@ void Rankings::StraightFlush(std::vector<Card> hand_player, std::vector<Card> bo
 
 	if (flush_ && straight_)
 	{
-		straight_flush_ = true;
 		rank_ = EnumRank::kStraightFlush;
 		RoyalFlush(vector_for_straight_flush);
 	}
@@ -290,6 +293,23 @@ void Rankings::Straight(std::vector<Card> all_hand, std::vector<Card> hand)
 	}
 }
 
+void Rankings::CheckRank(std::vector<Card> hand, std::vector<Card> board)
+{
+	StraightFlush(hand, board);
+	if (rank_ != EnumRank::kStraightFlush && rank_ != EnumRank::kRoyalFlush)
+	{
+		SameValue(hand, board);
+	}
+	if (rank_ == EnumRank::kHighCard)
+	{
+		SameValue(hand, board);
+	}
+	if (rank_ == EnumRank::kHighCard)
+	{
+		HighCard(hand);
+	}
+}
+
 void Rankings::SameValue(std::vector<Card> hand, std::vector<Card> board)
 {
 	std::vector<Card> all_hand = board;
@@ -358,7 +378,7 @@ void Rankings::SameValue(std::vector<Card> hand, std::vector<Card> board)
 			is_same_value = true;
 			rank_ = EnumRank::kThreeOfAKind;
 		}
-		else if (value_count == 3 && rank_ == EnumRank::kTwoPair)
+		else if (value_count == 3 && (rank_ == EnumRank::kTwoPair || rank_ == EnumRank::kStraight || rank_ == EnumRank::kFlush))
 		{
 			for (auto s : same_value_hand)
 			{
@@ -368,7 +388,7 @@ void Rankings::SameValue(std::vector<Card> hand, std::vector<Card> board)
 			is_same_value = true;
 			rank_ = EnumRank::kFullHouse;
 		}
-		else if (value_count == 4 && rank_ == EnumRank::kThreeOfAKind)
+		else if (value_count == 4 && (rank_ == EnumRank::kThreeOfAKind || rank_ == EnumRank::kStraight || rank_ == EnumRank::kFlush))
 		{
 			for (auto s : same_value_hand)
 			{
@@ -414,10 +434,28 @@ void Rankings::SameValue(std::vector<Card> hand, std::vector<Card> board)
 
 void Rankings::HighCard(std::vector<Card> hand)
 {
+	if (hand.front() > hand.back())
+	{
+		highest_card_ = hand.front();
+	}
+	else
+	{
+		highest_card_ = hand.back();
+	}
 
+
+	if (hand.front().ValueToInt() == 1)
+	{
+		highest_card_ = hand.front();
+	}
+	else if (hand.back().ValueToInt() == 1)
+	{
+		highest_card_ = hand.back();
+	}
+	
 }
 
-void Rankings::CheckRank()
+void Rankings::RankToString()
 {
 	switch (rank_)
 	{
@@ -430,21 +468,30 @@ void Rankings::CheckRank()
 	case EnumRank::kThreeOfAKind: std::cout << "Three of a Kind" << std::endl; break;
 	case EnumRank::kTwoPair: std::cout << "Two Pair" << std::endl; break;
 	case EnumRank::kOnePair: std::cout << "One Pair" << std::endl; break;
-	default: std::cout << "High Card" << std::endl; break;
+	default: std::cout << "High Card : " << highest_card_.ValueToString() << " of " << highest_card_.SuitToString() << std::endl; break;
+	}
+}
+
+int Rankings::RankToInt()
+{
+	switch (rank_)
+	{
+	case EnumRank::kRoyalFlush: return static_cast<int>(EnumRank::kRoyalFlush);
+	case EnumRank::kStraightFlush: return static_cast<int>(EnumRank::kStraightFlush);
+	case EnumRank::kFourOfAKind: return static_cast<int>(EnumRank::kFourOfAKind);
+	case EnumRank::kFullHouse: return static_cast<int>(EnumRank::kFullHouse);
+	case EnumRank::kFlush: return static_cast<int>(EnumRank::kFlush);
+	case EnumRank::kStraight: return static_cast<int>(EnumRank::kStraight);
+	case EnumRank::kThreeOfAKind: return static_cast<int>(EnumRank::kThreeOfAKind);
+	case EnumRank::kTwoPair: return static_cast<int>(EnumRank::kTwoPair);
+	case EnumRank::kOnePair: return static_cast<int>(EnumRank::kOnePair);
+	case EnumRank::kHighCard: return static_cast<int>(EnumRank::kHighCard);
 	}
 }
 
 void Rankings::NewGame()
 {
 	rank_ = EnumRank::kHighCard;
-	royal_flush_ = false;
-	straight_flush_ = false;
-	four_of_a_kind_ = false;
-	full_house_ = false;
 	flush_ = false;
 	straight_ = false;
-	three_of_a_kind_ = false;
-	two_pair_ = false;
-	one_pair_ = false;
-	high_card_ = false;
 }

@@ -24,17 +24,17 @@ void Game::GameLoop()
 		CardDeal();
 
 
-		DrawGame();
+		//DrawGame();
 		/*system("pause");
 	system("cls");*/
 		Flop();
 
-		DrawGame();
+		//DrawGame();
 		/*system("pause");
 	system("cls");*/
 		Turn();
 
-		DrawGame();
+		//DrawGame();
 		/*system("pause");
 	system("cls");*/
 		River();
@@ -42,13 +42,13 @@ void Game::GameLoop()
 
 		DrawGame();
 		std::cout << std::endl << std::endl << std::endl;
-		player1_.rankings_.SameValue(player1_.Hand(), dealer_.Board());
-		player2_.rankings_.SameValue(player2_.Hand(), dealer_.Board());
+		player1_.rankings_.CheckRank(player1_.Hand(), dealer_.Board());
+		player2_.rankings_.CheckRank(player2_.Hand(), dealer_.Board());
 
 		std::cout << "Player 1's rank: " << std::endl;
-		player1_.rankings_.CheckRank();
+		player1_.rankings_.RankToString();
 		std::cout << "Player 2's rank: " << std::endl;
-		player2_.rankings_.CheckRank();
+		player2_.rankings_.RankToString();
 
 		rank = player1_.rankings_.Rank();
 
@@ -63,7 +63,7 @@ void Game::GameLoop()
 
 		round++;
 	}
-	while (!(rank == Rankings::EnumRank::kThreeOfAKind));
+	while (!(rank == Rankings::EnumRank::kRoyalFlush));
 	std::cout << std::endl << "Nombre de Round : " << round << std::endl;
 }
 

@@ -8,6 +8,8 @@
 class Rankings
 {
 public:
+	Rankings();
+
 	enum class EnumRank
 	{
 		kHighCard,
@@ -22,29 +24,28 @@ public:
 		kRoyalFlush
 	};
 
+	void RankToString();
+
+	int RankToInt();
+
+	void NewGame();
+	void CheckRank(std::vector<Card>,std::vector<Card>);
+	EnumRank Rank() const { return rank_; }
+
+private:
+
 	void RoyalFlush(std::vector<Card> vector_straight_flush); // Quinte Flush Royale
 	void StraightFlush(std::vector<Card>, std::vector<Card>); // Quinte Flush
 	void SameValue(std::vector<Card>, std::vector<Card>); // Carte Identique
 	void HighCard(std::vector<Card>);// Carte Haute
-	void CheckRank();
-	void NewGame();
-	EnumRank Rank() const { return rank_; }
-
-private:
 	std::vector<Card> Flush(std::vector<Card>, std::vector<Card>); // Couleur
 	void Straight(std::vector<Card>, std::vector<Card>); // Suite
 
-	bool royal_flush_ = false;
-	bool straight_flush_ = false;
-	bool four_of_a_kind_ = false;
-	bool full_house_ = false;
-	bool flush_ = false;
 	bool straight_ = false;
-	bool three_of_a_kind_ = false;
-	bool two_pair_ = false;
-	bool one_pair_ = false;
-	bool high_card_ = false;
-	EnumRank rank_;
+	bool flush_ = false;
+
+	Card highest_card_;
+	EnumRank rank_ = EnumRank::kHighCard;
 };
 
 #endif // RANKINGS_H

@@ -1,6 +1,7 @@
 #ifndef CARD_H
 #define CARD_H
 #include <string>
+#include <vector>
 
 class Card
 {
@@ -43,6 +44,8 @@ public:
 	EnumSuit Suit() const { return suit_; }
 
 	bool operator==(const Card& other) const { return value_ == other.value_ && suit_ == other.suit_; }
+
+	bool operator>(const Card& other) const { return value_ > other.value_; }
 
 private:
 	EnumValue value_;
