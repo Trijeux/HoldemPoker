@@ -412,6 +412,11 @@ void Rankings::SameValue(std::vector<Card> hand, std::vector<Card> board)
 	}
 }
 
+void Rankings::HighCard(std::vector<Card> hand)
+{
+
+}
+
 void Rankings::CheckRank()
 {
 	switch (rank_)

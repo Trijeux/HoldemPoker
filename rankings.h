@@ -24,13 +24,8 @@ public:
 
 	void RoyalFlush(std::vector<Card> vector_straight_flush); // Quinte Flush Royale
 	void StraightFlush(std::vector<Card>, std::vector<Card>); // Quinte Flush
-	void FourOfAKind(); // Carre
-	void FullHouse(); // Full
-	void ThreeOfAKind(); // Brelan
-	void TwoPair(); // Double Paire
-	void OnePair();// Paire
 	void SameValue(std::vector<Card>, std::vector<Card>); // Carte Identique
-	void HighCard();// Carte Haute
+	void HighCard(std::vector<Card>);// Carte Haute
 	void CheckRank();
 	void NewGame();
 	EnumRank Rank() const { return rank_; }
