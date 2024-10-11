@@ -18,9 +18,11 @@ public:
 
 	Rankings rankings_;
 
-	int Bank() const { return bank_; }
-
+	std::string name_;
+	
 	int bank_ = 1000;
+
+	int bet_ = 0;
 
 private:
 

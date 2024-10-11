@@ -3,19 +3,34 @@
 #include <iostream>
 
 
+Game::Game()
+{
+	std::cout << "What your name player one : ";
+	std::cin >> player1_.name_;
+	std::cout << "Your name is : " << player1_.name_ << std::endl << std::endl;
+
+	system("pause");
+
+	system("cls");
+
+	std::cout << "What your name player Tow : ";
+	std::cin >> player2_.name_;
+	std::cout << "Your name is : " << player2_.name_ << std::endl << std::endl;
+
+	system("pause");
+
+	system("cls");
+}
+
 void Game::WhoWinner()
 {
 	if (player1_.rankings_.RankToInt() > player2_.rankings_.RankToInt())
 	{
-		std::cout << "Player 1 wins round!" << std::endl;
-		player1_.bank_ += 50;
-		player2_.bank_ -= 50;
+		std::cout << player1_.name_ << " wins round!" << std::endl;
 	}
 	else if (player1_.rankings_.RankToInt() < player2_.rankings_.RankToInt())
 	{
-		std::cout << "Player 2 wins round!" << std::endl;
-		player1_.bank_ -= 50;
-		player2_.bank_ += 50;
+		std::cout << player2_.name_ << " wins round!" << std::endl;
 	}
 	else if (player1_.rankings_.RankToInt() == player2_.rankings_.RankToInt())
 	{
@@ -23,30 +38,22 @@ void Game::WhoWinner()
 		{
 			if (player2_.rankings_.HighestCard().ValueToInt() == 1)
 			{
-				std::cout << "Player 2 wins round!" << std::endl;
-				player1_.bank_ -= 50;
-				player2_.bank_ += 50;
+				std::cout << player2_.name_ << " wins round!" << std::endl;
 			}
 			else
 			{
-				std::cout << "Player 1 wins round!" << std::endl;
-				player1_.bank_ += 50;
-				player2_.bank_ -= 50;
+				std::cout << player1_.name_ << " wins round!" << std::endl;
 			}
 		}
 		else if (player1_.rankings_.HighestCard() < player2_.rankings_.HighestCard())
 		{
 			if (player1_.rankings_.HighestCard().ValueToInt() == 1)
 			{
-				std::cout << "Player 1 wins round!" << std::endl;
-				player1_.bank_ += 50;
-				player2_.bank_ -= 50;
+				std::cout << player1_.name_ << " wins round!" << std::endl;
 			}
 			else
 			{
-				std::cout << "Player 2 wins round!" << std::endl;
-				player1_.bank_ -= 50;
-				player2_.bank_ += 50;
+				std::cout << player2_.name_ << " wins round!" << std::endl;
 			}
 		}
 		else if (player1_.rankings_.HighestCard() == player2_.rankings_.HighestCard())
@@ -70,9 +77,9 @@ void Game::NewGame()
 
 void Game::DisplayRankPlayer()
 {
-	std::cout << "Player 1's rank: " << std::endl;
+	std::cout << player1_.name_ << " rank: " << std::endl;
 	player1_.rankings_.RankToString();
-	std::cout << "Player 2's rank: " << std::endl;
+	std::cout << player2_.name_ << " rank: " << std::endl;
 	player2_.rankings_.RankToString();
 }
 
@@ -84,15 +91,15 @@ void Game::CheckHand()
 
 void Game::CheckBankEmpty(bool& game_end)
 {
-	if (player1_.Bank() <= 0 || player2_.Bank() <= 0)
+	if (player1_.bank_ <= 0 || player2_.bank_ <= 0)
 	{
-		if (player2_.Bank() <= 0)
+		if (player2_.bank_ <= 0)
 		{
-			std::cout  << "Player 1 Wins All!" << std::endl;
+			std::cout << player1_.name_ << " Wins All!" << std::endl;
 		}
 		else
 		{
-			std::cout  << "Player 2 Wins All!" << std::endl;
+			std::cout << player2_.name_ << " Wins All!" << std::endl;
 		}
 		game_end = true;
 	}
@@ -104,36 +111,88 @@ void Game::GameLoop()
 
 	do
 	{
+		bool flag_fold_player_one = false;
+		bool flag_fold_player_tow = false;
+
 		NewGame();
 
 		CardDeal();
 
-		DrawGame();
-		Flop();
+		BetTurn(flag_fold_player_one, flag_fold_player_tow);
 
-		DrawGame();
-		Turn();
+		if (!flag_fold_player_one || !flag_fold_player_tow)
+		{
+			Flop();
+			system("cls");
+			DisplayTable();
+			system("pause");
+			system("cls");
 
-		DrawGame();
-		River();
+			BetTurn(flag_fold_player_one, flag_fold_player_tow);
 
-		DrawGame();
-		
-		std::cout << std::endl << std::endl << std::endl;
+			if (!flag_fold_player_one || !flag_fold_player_tow)
+			{
+				Turn();
+				system("cls");
+				DisplayTable();
+				system("pause");
+				system("cls");
 
-		CheckHand();
+				BetTurn(flag_fold_player_one, flag_fold_player_tow);
 
-		DisplayRankPlayer();
+				if (!flag_fold_player_one || !flag_fold_player_tow)
+				{
+					River();
+					system("cls");
+					DisplayTable();
+					system("pause");
+					system("cls");
+
+					BetTurn(flag_fold_player_one, flag_fold_player_tow);
+
+
+					if (!flag_fold_player_one || !flag_fold_player_tow)
+					{
+						std::cout << std::endl << std::endl << std::endl;
+
+						CheckHand();
+
+						system("cls");
+
+						DisplayPlayer1();
+						DisplayPlayer2();
+						DisplayTable();
+
+						DisplayRankPlayer();
+
+						std::cout << std::endl;
+
+						WhoWinner();
+					}
+				}
+			}
+		}
 
 		std::cout << std::endl;
 
-		WhoWinner();
+		system("cls");
 
-		std::cout << std::endl;
+		if (flag_fold_player_one)
+		{
+			std::cout << player1_.name_ << " folds!" << std::endl;
+			std::cout << player2_.name_ << " win!" << std::endl;
+		}
+
+		if (flag_fold_player_tow)
+		{
+			std::cout << player2_.name_ << " folds!" << std::endl;
+			std::cout << player1_.name_ << " win!" << std::endl;
+		}
 
 		CheckBankEmpty(game_end);
-	}
-	while (!game_end);
+
+		system("pause");
+	} while (!game_end);
 }
 
 void Game::CardDeal()
@@ -166,18 +225,250 @@ void Game::River()
 	dealer_.AddCardInBoard(deck_.PickCardAndRemove());
 }
 
-void Game::DrawGame()
+void Game::DisplayPlayer1()
 {
-	std::cout << "Player 1 : " << std::endl;
-	std::cout << "Bank : " << player1_.Bank() << std::endl << std::endl;
+	std::cout << player1_.name_ << " : " << std::endl;
+	std::cout << "Bank : " << player1_.bank_ << std::endl << std::endl;
 	std::cout << "Hand :" << std::endl;
 	player1_.ShowHand();
 	std::cout << std::endl;
-	std::cout << "Player 2 : " << std::endl;
-	std::cout << "Bank : " << player2_.Bank() << std::endl << std::endl;
+}
+
+void Game::DisplayPlayer2()
+{
+	std::cout << player2_.name_ << " : " << std::endl;
+	std::cout << "Bank : " << player2_.bank_ << std::endl << std::endl;
 	std::cout << "Hand :" << std::endl;
 	player2_.ShowHand();
-	std::cout << std::endl << "Board :" << std::endl;
+	std::cout << std::endl;
+}
+
+void Game::DisplayTable()
+{
+	std::cout << "Board :" << std::endl;
 	dealer_.ShowBoard();
 	std::cout << std::endl;
+}
+
+void Game::BetTurn(bool& flag_fold_player_one, bool& flag_fold_player_tow)
+{
+	do
+	{
+		system("cls");
+		std::cout << "Turn " << player1_.name_ << std::endl;
+		system("pause");
+		system("cls");
+
+		DisplayPlayer1();
+
+		std::string choice_player_one;
+		std::string choice_player_tow;
+		std::string bet_player_one;
+		std::string bet_player_tow;
+
+		if (player2_.bet_ <= 0)
+		{
+			std::cout << player1_.name_ << " what do you want to do : " << std::endl << "(1) Check" << std::endl << "(2) Bet" << std::endl << "(3) All in" << std::endl << "(4) Fold" << std::endl;
+		}
+		else
+		{
+			std::cout << player1_.name_ << " what do you want to do : " << std::endl << "(1) Call" << std::endl << "(2) All in" << std::endl << "(3) Fold" << std::endl;
+		}
+
+		std::cin >> choice_player_one;
+
+		if (choice_player_one == "1")
+		{
+			if (player2_.bank_ < player1_.bet_)
+			{
+				player1_.bet_ = player1_.bank_;
+				player1_.bank_ -= player1_.bet_;
+			}
+			else
+			{
+				player1_.bet_ = player2_.bet_;
+				player1_.bank_ -= player1_.bet_;
+			}
+
+
+		}
+		else if (choice_player_one == "2")
+		{
+			if (player2_.bet_ > 0)
+			{
+				player1_.bet_ = player1_.bank_;
+				player1_.bank_ -= player1_.bet_;
+			}
+			system("cls");
+			while (true)
+			{
+				std::cout << "What your bet : " << std::endl << "(1) " << kBetOne << std::endl << "(2) " << kBetTow << std::endl << "(3) " << kBetThree << std::endl << "(4) " << kBetFour << std::endl;
+				std::cin >> bet_player_one;
+				if (bet_player_one == "1")
+				{
+					player1_.bet_ = kBetOne;
+					player1_.bank_ -= player1_.bet_;
+					break;
+				}
+				if (bet_player_one == "2")
+				{
+					player1_.bet_ = kBetTow;
+					player1_.bank_ -= player1_.bet_;
+					break;
+				}
+				if (bet_player_one == "3")
+				{
+					player1_.bet_ = kBetThree;
+					player1_.bank_ -= player1_.bet_;
+					break;
+				}
+				if (bet_player_one == "4")
+				{
+					player1_.bet_ = kBetFour;
+					player1_.bank_ -= player1_.bet_;
+					break;
+				}
+				system("cls");
+				std::cout << "Invalid input" << std::endl;
+			}
+		}
+		else if (choice_player_one == "3")
+		{
+			if (player2_.bet_ > 0)
+			{
+				flag_fold_player_one = true;
+				break;
+			}
+			player1_.bet_ = player1_.bank_;
+			player1_.bank_ -= player1_.bet_;
+		}
+		else if (choice_player_one == "4")
+		{
+			if (player2_.bet_ > 0)
+			{
+				system("cls");
+				std::cout << "Invalid input" << std::endl;
+				continue;
+			}
+			flag_fold_player_one = true;
+			break;
+		}
+		else
+		{
+			system("cls");
+			std::cout << "Invalid input" << std::endl;
+			continue;
+		}
+
+		//////////////////////////////////////////////////////////////////////////////////////////////// Player 2 Turn //////////////////////////////////////////////////////////////////////////////////////
+		system("cls");
+		std::cout << "Turn " << player2_.name_ << std::endl;
+		system("pause");
+		system("cls");
+
+		DisplayPlayer2();
+
+		if (player1_.bet_ <= 0)
+		{
+			std::cout << player2_.name_ << " what do you want to do : " << std::endl << "(1) Check" << std::endl << "(2) Bet" << std::endl << "(3) All in" << std::endl << "(4) Fold" << std::endl;
+		}
+		else
+		{
+			std::cout << player2_.name_ << " what do you want to do : " << std::endl << "(1) Call" << std::endl << "(2) All in" << std::endl << "(3) Fold" << std::endl;
+		}
+
+		std::cin >> choice_player_tow;
+
+		if (choice_player_tow == "1")
+		{
+			if (player1_.bet_ > 0)
+			{
+				if (player1_.bank_ < player2_.bet_)
+				{
+					player2_.bet_ = player2_.bank_;
+					player2_.bank_ -= player2_.bet_;
+				}
+				else
+				{
+					player2_.bet_ = player1_.bet_;
+					player2_.bank_ -= player2_.bet_;
+				}
+			}
+		}
+		else if (choice_player_tow == "2")
+		{
+			if (player1_.bet_ > 0)
+			{
+				player2_.bet_ = player2_.bank_;
+				player2_.bank_ -= player2_.bet_;
+			}
+			system("cls");
+			while (true)
+			{
+				std::cout << "What your bet : " << std::endl << "(1) " << kBetOne << std::endl << "(2) " << kBetTow << std::endl << "(3) " << kBetThree << std::endl << "(4) " << kBetFour << std::endl;
+				std::cin >> bet_player_tow;
+				if (bet_player_tow == "1")
+				{
+					player2_.bet_ = kBetOne;
+					player2_.bank_ -= player2_.bet_;
+					break;
+				}
+				if (bet_player_tow == "2")
+				{
+					player2_.bet_ = kBetTow;
+					player2_.bank_ -= player2_.bet_;
+					break;
+				}
+				if (bet_player_tow == "3")
+				{
+					player2_.bet_ = kBetThree;
+					player2_.bank_ -= player2_.bet_;
+					break;
+				}
+				if (bet_player_tow == "4")
+				{
+					player2_.bet_ = kBetFour;
+					player2_.bank_ -= player2_.bet_;
+					break;
+				}
+				system("cls");
+				std::cout << "Invalid input" << std::endl;
+			}
+		}
+		else if (choice_player_tow == "3")
+		{
+			if (player1_.bet_ > 0)
+			{
+				flag_fold_player_tow = true;
+				break;
+			}
+			player2_.bet_ = player2_.bank_;
+			player2_.bank_ -= player2_.bet_;
+		}
+		else if (choice_player_tow == "4")
+		{
+			if (player1_.bet_ > 0)
+			{
+				system("cls");
+				std::cout << "Invalid input" << std::endl;
+				continue;
+			}
+			flag_fold_player_one = true;
+			break;
+		}
+		else
+		{
+			system("cls");
+			std::cout << "Invalid input" << std::endl;
+			continue;
+		}
+
+		if (player1_.bank_ == 0)
+		{
+			break;
+		}
+	} while (player1_.bet_ != player2_.bet_);
+	pot_ = player1_.bet_ + player2_.bet_;
+	player1_.bet_ = 0;
+	player2_.bet_ = 0;
 }

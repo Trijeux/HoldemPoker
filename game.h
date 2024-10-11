@@ -5,10 +5,16 @@
 #include "player.h"
 #include "rankings.h"
 
+
+constexpr int kBetOne = 10;
+constexpr int kBetTow = 50;
+constexpr int kBetThree = 100;
+constexpr int kBetFour = 500;
+
 class Game
 {
 public:
-	Game() = default;
+	Game();
 	void WhoWinner();
 	void NewGame();
 	void DisplayRankPlayer();
@@ -23,11 +29,17 @@ private:
 
 	Deck deck_;
 
+	int pot_ = 0;
+
 	void CardDeal();
 	void Flop();
 	void Turn();
 	void River();
-	void DrawGame();
+	void DisplayPlayer1();
+	void DisplayPlayer2();
+	void DisplayTable();
+
+	void BetTurn(bool& flag_fold_player_one, bool& flag_fold_player_tow);
 };
 
 #endif // GAME_H
