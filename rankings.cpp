@@ -71,6 +71,7 @@ void Rankings::StraightFlush(std::vector<Card> hand_player, std::vector<Card> bo
 
 std::vector<Card> Rankings::Flush(std::vector<Card> all_hand, std::vector<Card> hand)
 {
+	flush_ = false;
 	std::vector<Card> vec_square;
 	std::vector<Card> vec_heart;
 	std::vector<Card> vec_club;
@@ -222,7 +223,7 @@ void Rankings::Straight(std::vector<Card> all_hand, std::vector<Card> hand)
 	if (all_hand.size() >= 5)
 	{
 		int old_value = 0;
-		int straight_count = 0;
+		int straight_count = 1;
 		bool is_straight = false;
 		bool have_ace = false;
 
@@ -245,13 +246,17 @@ void Rankings::Straight(std::vector<Card> all_hand, std::vector<Card> hand)
 			{
 				cards_straight.emplace_back(a);
 			}
-			else if(!(straight_count == 5))
+			else if(straight_count > 5 || straight_count > 4 && !have_ace)
 			{
-				old_value = a.ValueToInt();
 				straight_count = 1;
 				cards_straight.clear();
 				cards_straight.emplace_back(a);
 				is_straight = false;
+			}
+			else
+			{
+				straight_count = 1;
+				old_value = a.ValueToInt();
 			}
 		}
 
@@ -289,6 +294,8 @@ void Rankings::Straight(std::vector<Card> all_hand, std::vector<Card> hand)
 		{
 			straight_ = true;
 			rank_ = EnumRank::kStraight;
+			highest_card_ = cards_straight.back();
+			
 		}
 	}
 }
@@ -297,7 +304,7 @@ void Rankings::CheckRank(std::vector<Card> hand, std::vector<Card> board)
 {
 	HighCard(hand);
 	StraightFlush(hand, board);
-	if (rank_ != EnumRank::kStraightFlush && rank_ != EnumRank::kRoyalFlush)
+	if (rank_ != EnumRank::kStraightFlush || rank_ != EnumRank::kRoyalFlush)
 	{
 		SameValue(hand, board);
 	}
@@ -461,7 +468,7 @@ void Rankings::RankToString()
 	case EnumRank::kFourOfAKind: std::cout << "Four of a Kind" << std::endl; break;
 	case EnumRank::kFullHouse: std::cout << "Full House" << std::endl; break;
 	case EnumRank::kFlush: std::cout << "Flush" << std::endl; break;
-	case EnumRank::kStraight: std::cout << "Straight" << std::endl; break;
+	case EnumRank::kStraight: std::cout << "Straight next to " << highest_card_.ValueToString() << std::endl; break;
 	case EnumRank::kThreeOfAKind: std::cout << "Three of a Kind" << std::endl; break;
 	case EnumRank::kTwoPair: std::cout << "Two Pair" << std::endl; break;
 	case EnumRank::kOnePair: std::cout << "One Pair" << std::endl; break;

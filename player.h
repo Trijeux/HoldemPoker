@@ -19,9 +19,10 @@ public:
 	Rankings rankings_;
 
 	int Bank() const { return bank_; }
-private:
 
 	int bank_ = 1000;
+
+private:
 
 	std::vector<Card> hand_;
 };

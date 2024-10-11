@@ -8,7 +8,12 @@
 class Game
 {
 public:
-	Game();
+	Game() = default;
+	void WhoWinner();
+	void NewGame();
+	void DisplayRankPlayer();
+	void CheckHand();
+	void CheckBankEmpty(bool& game_end);
 	void GameLoop();
 private:
 	Player player1_;

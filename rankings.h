@@ -31,7 +31,6 @@ public:
 	void NewGame();
 	void CheckRank(std::vector<Card>,std::vector<Card>);
 	EnumRank Rank() const { return rank_; }
-
 	Card HighestCard() const { return highest_card_; }
 
 private:
