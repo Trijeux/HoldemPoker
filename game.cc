@@ -86,6 +86,7 @@ void Game::DisplayRankPlayer()
 void Game::CheckHand()
 {
 	player1_.rankings_.CheckRank(player1_.Hand(), dealer_.Board());
+	std::cout << std::endl;
 	player2_.rankings_.CheckRank(player2_.Hand(), dealer_.Board());
 }
 
@@ -111,6 +112,8 @@ void Game::GameLoop()
 
 	do
 	{
+		bool flag_fold = false;
+		bool flag_all_in = false;
 		bool flag_fold_player_one = false;
 		bool flag_fold_player_tow = false;
 
@@ -118,42 +121,50 @@ void Game::GameLoop()
 
 		CardDeal();
 
-		BetTurn(flag_fold_player_one, flag_fold_player_tow);
+		BetTurn(flag_fold_player_one, flag_fold_player_tow, flag_fold, flag_all_in);
 
-		if (!flag_fold_player_one || !flag_fold_player_tow)
+		if (!flag_fold)
 		{
 			Flop();
-			system("cls");
-			DisplayTable();
-			system("pause");
-			system("cls");
-
-			BetTurn(flag_fold_player_one, flag_fold_player_tow);
-
-			if (!flag_fold_player_one || !flag_fold_player_tow)
+			if (!flag_all_in)
 			{
-				Turn();
 				system("cls");
 				DisplayTable();
 				system("pause");
 				system("cls");
 
-				BetTurn(flag_fold_player_one, flag_fold_player_tow);
+				BetTurn(flag_fold_player_one, flag_fold_player_tow, flag_fold, flag_all_in);
+			}
 
-				if (!flag_fold_player_one || !flag_fold_player_tow)
+			if (!flag_fold)
+			{
+				Turn();
+				if (!flag_all_in)
 				{
-					River();
 					system("cls");
 					DisplayTable();
 					system("pause");
 					system("cls");
 
-					BetTurn(flag_fold_player_one, flag_fold_player_tow);
+					BetTurn(flag_fold_player_one, flag_fold_player_tow, flag_fold, flag_all_in);
+				}
 
-
-					if (!flag_fold_player_one || !flag_fold_player_tow)
+				if (!flag_fold)
+				{
+					River();
+					if (!flag_all_in)
 					{
-						std::cout << std::endl << std::endl << std::endl;
+						system("cls");
+						DisplayTable();
+						system("pause");
+						system("cls");
+
+						BetTurn(flag_fold_player_one, flag_fold_player_tow, flag_fold, flag_all_in);
+					}
+
+
+					if (!flag_fold)
+					{
 
 						CheckHand();
 
@@ -175,18 +186,21 @@ void Game::GameLoop()
 
 		std::cout << std::endl;
 
-		system("cls");
 
 		if (flag_fold_player_one)
 		{
+			system("cls");
 			std::cout << player1_.name_ << " folds!" << std::endl;
 			std::cout << player2_.name_ << " win!" << std::endl;
+			player2_.bank_ += pot_;
 		}
 
 		if (flag_fold_player_tow)
 		{
+			system("cls");
 			std::cout << player2_.name_ << " folds!" << std::endl;
 			std::cout << player1_.name_ << " win!" << std::endl;
+			player1_.bank_ += pot_;
 		}
 
 		CheckBankEmpty(game_end);
@@ -245,12 +259,14 @@ void Game::DisplayPlayer2()
 
 void Game::DisplayTable()
 {
+	std::cout << "Pot : "  << pot_ << std::endl << std::endl;
+
 	std::cout << "Board :" << std::endl;
 	dealer_.ShowBoard();
 	std::cout << std::endl;
 }
 
-void Game::BetTurn(bool& flag_fold_player_one, bool& flag_fold_player_tow)
+void Game::BetTurn(bool& flag_fold_player_one, bool& flag_fold_player_tow, bool& flag_fold, bool& flag_all_in)
 {
 	do
 	{
@@ -284,10 +300,11 @@ void Game::BetTurn(bool& flag_fold_player_one, bool& flag_fold_player_tow)
 				player1_.bet_ = player1_.bank_;
 				player1_.bank_ -= player1_.bet_;
 			}
-			else
+			else if (player2_.bet_ > 0)
 			{
 				player1_.bet_ = player2_.bet_;
 				player1_.bank_ -= player1_.bet_;
+				continue;
 			}
 
 
@@ -298,38 +315,42 @@ void Game::BetTurn(bool& flag_fold_player_one, bool& flag_fold_player_tow)
 			{
 				player1_.bet_ = player1_.bank_;
 				player1_.bank_ -= player1_.bet_;
+				flag_all_in = true;
 			}
-			system("cls");
-			while (true)
+			else
 			{
-				std::cout << "What your bet : " << std::endl << "(1) " << kBetOne << std::endl << "(2) " << kBetTow << std::endl << "(3) " << kBetThree << std::endl << "(4) " << kBetFour << std::endl;
-				std::cin >> bet_player_one;
-				if (bet_player_one == "1")
-				{
-					player1_.bet_ = kBetOne;
-					player1_.bank_ -= player1_.bet_;
-					break;
-				}
-				if (bet_player_one == "2")
-				{
-					player1_.bet_ = kBetTow;
-					player1_.bank_ -= player1_.bet_;
-					break;
-				}
-				if (bet_player_one == "3")
-				{
-					player1_.bet_ = kBetThree;
-					player1_.bank_ -= player1_.bet_;
-					break;
-				}
-				if (bet_player_one == "4")
-				{
-					player1_.bet_ = kBetFour;
-					player1_.bank_ -= player1_.bet_;
-					break;
-				}
 				system("cls");
-				std::cout << "Invalid input" << std::endl;
+				while (true)
+				{
+					std::cout << "What your bet : " << std::endl << "(1) " << kBetOne << std::endl << "(2) " << kBetTow << std::endl << "(3) " << kBetThree << std::endl << "(4) " << kBetFour << std::endl;
+					std::cin >> bet_player_one;
+					if (bet_player_one == "1")
+					{
+						player1_.bet_ = kBetOne;
+						player1_.bank_ -= player1_.bet_;
+						break;
+					}
+					if (bet_player_one == "2")
+					{
+						player1_.bet_ = kBetTow;
+						player1_.bank_ -= player1_.bet_;
+						break;
+					}
+					if (bet_player_one == "3")
+					{
+						player1_.bet_ = kBetThree;
+						player1_.bank_ -= player1_.bet_;
+						break;
+					}
+					if (bet_player_one == "4")
+					{
+						player1_.bet_ = kBetFour;
+						player1_.bank_ -= player1_.bet_;
+						break;
+					}
+					system("cls");
+					std::cout << "Invalid input" << std::endl;
+				}
 			}
 		}
 		else if (choice_player_one == "3")
@@ -337,10 +358,12 @@ void Game::BetTurn(bool& flag_fold_player_one, bool& flag_fold_player_tow)
 			if (player2_.bet_ > 0)
 			{
 				flag_fold_player_one = true;
+				flag_fold = true;
 				break;
 			}
 			player1_.bet_ = player1_.bank_;
 			player1_.bank_ -= player1_.bet_;
+			flag_all_in = true;
 		}
 		else if (choice_player_one == "4")
 		{
@@ -351,6 +374,7 @@ void Game::BetTurn(bool& flag_fold_player_one, bool& flag_fold_player_tow)
 				continue;
 			}
 			flag_fold_player_one = true;
+			flag_fold = true;
 			break;
 		}
 		else
@@ -401,38 +425,42 @@ void Game::BetTurn(bool& flag_fold_player_one, bool& flag_fold_player_tow)
 			{
 				player2_.bet_ = player2_.bank_;
 				player2_.bank_ -= player2_.bet_;
+				flag_all_in = true;
 			}
-			system("cls");
-			while (true)
+			else 
 			{
-				std::cout << "What your bet : " << std::endl << "(1) " << kBetOne << std::endl << "(2) " << kBetTow << std::endl << "(3) " << kBetThree << std::endl << "(4) " << kBetFour << std::endl;
-				std::cin >> bet_player_tow;
-				if (bet_player_tow == "1")
-				{
-					player2_.bet_ = kBetOne;
-					player2_.bank_ -= player2_.bet_;
-					break;
-				}
-				if (bet_player_tow == "2")
-				{
-					player2_.bet_ = kBetTow;
-					player2_.bank_ -= player2_.bet_;
-					break;
-				}
-				if (bet_player_tow == "3")
-				{
-					player2_.bet_ = kBetThree;
-					player2_.bank_ -= player2_.bet_;
-					break;
-				}
-				if (bet_player_tow == "4")
-				{
-					player2_.bet_ = kBetFour;
-					player2_.bank_ -= player2_.bet_;
-					break;
-				}
 				system("cls");
-				std::cout << "Invalid input" << std::endl;
+				while (true)
+				{
+					std::cout << "What your bet : " << std::endl << "(1) " << kBetOne << std::endl << "(2) " << kBetTow << std::endl << "(3) " << kBetThree << std::endl << "(4) " << kBetFour << std::endl;
+					std::cin >> bet_player_tow;
+					if (bet_player_tow == "1")
+					{
+						player2_.bet_ = kBetOne;
+						player2_.bank_ -= player2_.bet_;
+						break;
+					}
+					if (bet_player_tow == "2")
+					{
+						player2_.bet_ = kBetTow;
+						player2_.bank_ -= player2_.bet_;
+						break;
+					}
+					if (bet_player_tow == "3")
+					{
+						player2_.bet_ = kBetThree;
+						player2_.bank_ -= player2_.bet_;
+						break;
+					}
+					if (bet_player_tow == "4")
+					{
+						player2_.bet_ = kBetFour;
+						player2_.bank_ -= player2_.bet_;
+						break;
+					}
+					system("cls");
+					std::cout << "Invalid input" << std::endl;
+				}
 			}
 		}
 		else if (choice_player_tow == "3")
@@ -440,10 +468,12 @@ void Game::BetTurn(bool& flag_fold_player_one, bool& flag_fold_player_tow)
 			if (player1_.bet_ > 0)
 			{
 				flag_fold_player_tow = true;
+				flag_fold = true;
 				break;
 			}
 			player2_.bet_ = player2_.bank_;
 			player2_.bank_ -= player2_.bet_;
+			flag_all_in = true;
 		}
 		else if (choice_player_tow == "4")
 		{
@@ -454,6 +484,7 @@ void Game::BetTurn(bool& flag_fold_player_one, bool& flag_fold_player_tow)
 				continue;
 			}
 			flag_fold_player_one = true;
+			flag_fold = true;
 			break;
 		}
 		else
@@ -468,7 +499,7 @@ void Game::BetTurn(bool& flag_fold_player_one, bool& flag_fold_player_tow)
 			break;
 		}
 	} while (player1_.bet_ != player2_.bet_);
-	pot_ = player1_.bet_ + player2_.bet_;
+	pot_ += player1_.bet_ + player2_.bet_;
 	player1_.bet_ = 0;
 	player2_.bet_ = 0;
 }

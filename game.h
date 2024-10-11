@@ -39,7 +39,7 @@ private:
 	void DisplayPlayer2();
 	void DisplayTable();
 
-	void BetTurn(bool& flag_fold_player_one, bool& flag_fold_player_tow);
+	void BetTurn(bool& flag_fold_player_one, bool& flag_fold_player_tow, bool& flag_fold, bool& flag_all_in);
 };
 
 #endif // GAME_H
